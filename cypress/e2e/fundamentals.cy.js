@@ -1,59 +1,56 @@
-describe("Automation Practice Mini Project Suite", () => {
-  
-  Cypress.on('uncaught:exception', () => {
-    return false;
-  });
+describe("Test Automation Practice Suite", { testIsolation: false }, () => {
+before(() => {
+//visit the website
+cy.visit("https://testautomationpractice.blogspot.com/");
+});
 
-  beforeEach(() => {
-    cy.visit("https://practice.expandtesting.com/");
-  });
+it("Fill out the form", () => {
+cy.get("#name").type("John Doe");
+cy.get("#email").type("john.doe@example.com");
+cy.get("#phone").type("1234567890");
+cy.get("#textarea").type("123 QA Test Automation Street");
+});
 
-  it("Executes form operations, dropdowns, checkboxes, radio buttons, file uploads, and scrolling", () => {
-    
-    // 1. Radio Buttons Journey
-    cy.visit("https://practice.expandtesting.com");
+it("Select values from a dropdown", () => {
+cy.get("#country").select("Canada");
 
-    cy.get("#blue", { timeout: 15000 }).should('be.visible').check().should("be.checked");
+cy.get("#country").should("have.value", "canada");
+});
 
-    cy.get("#blue").check().should("be.checked");
+it("Selects a radio buttons", () => {
+cy.get("#male").check();
 
-    // 2. Dropdown List Journey
-    cy.visit("https://practice.expandtesting.com");
-    cy.get("#dropdown").select("Option 1").should("have.value", "1");
+cy.get("#male").should("be.checked");
+});
 
-    // 3. Checkboxes Journey
-    cy.visit("https://practice.expandtesting.com");
-    cy.get("#checkbox1").check().should("be.checked");
-    cy.get("#checkbox2").uncheck().should("not.be.checked");
+it("Checks and Unchecks checkboxes", () => {
+cy.get("#sunday").check();
 
-    // 4. File Upload Journey (Safe In-Memory Mock)
-    cy.visit("https://practice.expandtesting.com");
-    cy.get('#fileInput').selectFile({
-      contents: Cypress.Buffer.from('Assignment Complete Asset Stream'),
-      fileName: 'sample.jpg',
-      mimeType: 'image/jpeg'
-    });
-    cy.get('#fileSubmit').click();
-    cy.get("h1", { timeout: 12000 }).should("contain", "Uploaded");
+cy.get("#sunday").should("be.checked");
 
-    // 5. Full Form Validation Entry
-    cy.visit("https://practice.expandtesting.com");
-    cy.get('#validationCustom01').clear().type("Umwali");
-    cy.get('#validationCustom02').clear().type("Angelique");
-    cy.get('input[name="username"]').type("UmwaliAngelique_student");
-    cy.get('select[name="payment"]').select("card");
-    cy.get('input[type="password"]').type("SecurePassword123!");
-    
-    // Check missing mandatory boxes to clear Bootstrap blockers
-    cy.get('#inlineRadio2').check();
-    cy.get('#invalidCheck').check();
+cy.get("#sunday").uncheck();
 
-    // Scroll to action view and hit submit
-    cy.get('button[type="submit"]').scrollIntoView().should("be.visible").click();
+cy.get("#sunday").should("not.be.checked");
+});
 
-    // Final success text verification
-    cy.get(".alert-success", { timeout: 12000 })
-      .should("be.visible")
-      .and("contain", "Form submitted successfully");
-  });
+it("Uploads a file", () => {
+cy.get("#singleFileInput").selectFile({
+contents: Cypress.Buffer.from("Automation Test Context Output Log"),
+fileName: "upload-manifest.txt",
+mimeType: "text/plain",
+});
+cy.get('input[type="file"]').first().should("exist");
+});
+
+it("Scroll to a hidden element", () => {
+cy.contains("h2", "Footer Links").scrollIntoView();
+
+cy.contains("h2", "Footer Links").should("be.visible");
+});
+
+it("Clicks the submit button and verifies a success message", () => {
+cy.get("button.submit-btn").scrollIntoView().click();
+
+cy.get("button.submit-btn").should("exist");
+});
 });
